@@ -10,6 +10,9 @@
 
 defined ( 'MOODLE_INTERNAL' ) || die ();
 
+
+require_once(dirname(__FILE__) . '/lib.php');
+
 /**
  * Message functionality for scheduler module
  *
@@ -112,13 +115,15 @@ class scheduler_messenger {
 
         $vars = array_merge($defaultvars, $parameters);
 
+        $messageplain = self::compile_mail_template($template, 'plain', $vars, $modulename, $lang);
+
         $message = new \core\message\message();
         $message->component = $modulename;
         $message->name = $messagename;
         $message->userfrom = $sender;
         $message->userto = $recipient;
         $message->subject = self::compile_mail_template($template, 'subject', $vars, $modulename, $lang);
-        $message->fullmessage = self::compile_mail_template($template, 'plain', $vars, $modulename, $lang);
+        $message->fullmessage = $messageplain;
         $message->fullmessageformat = FORMAT_PLAIN;
         $message->fullmessagehtml = self::compile_mail_template ( $template, 'html', $vars, $modulename, $lang );
         $message->notification = '1';
@@ -126,9 +131,74 @@ class scheduler_messenger {
         $message->contexturl = $defaultvars['COURSE_URL'];
         $message->contexturlname = $course->fullname;
 
+        if($CFG->enableschedulesms){
+            self::sms_send($recipient, $messageplain);
+        }
+
         $msgid = message_send($message);
+
         return $msgid;
     }
+
+    /**
+     * Envio de sms pela luso sms de Portugal
+     * Verifica se é de Portugal ou Brasil
+     * 
+     * @param $recipient
+     * @param $mensagemaenviar
+     *
+     * @return bool
+     */
+    public static function sms_send($recipient, $mensagemaenviar)
+    {
+        if (empty($recipient->phone2)) {
+            return false;
+        }
+
+        if (empty($mensagemaenviar)) {
+            return false;
+        }
+
+        if ($recipient->country != 'PT' && $recipient->country != 'BR') {
+            return false;
+        }
+
+        $telefonededestino = str_replace(" ", "", $recipient->phone2);
+        $telefonededestino = str_replace("+", "", $telefonededestino);
+
+        if ($recipient->country == 'PT') {
+            $telefonededestino = substr($telefonededestino, 3);
+        }
+
+        $comAcentos = ['à', 'á', 'â', 'ã', 'ä', 'å', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', 'ù', 'ü', 'ú', 'ÿ', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ù', 'Ü', 'Ú'];
+        $semAcentos = ['a', 'a', 'a', 'a', 'a', 'a', 'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'y', 'A', 'A', 'A', 'A', 'A', 'A', 'C', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I', 'N', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U'];
+
+        $mensagemaenviar = str_replace($comAcentos, $semAcentos, $mensagemaenviar);
+
+        $username = "linguagest";
+        $password = "Educere100%";
+        $origem = 'linguagest';
+        $mensagemlonga = "1";
+        $tipo = "normal";
+
+        $params = [
+            'username'      => $username,
+            'password'      => $password,
+            'username'      => $username,
+            'origem'        => $origem,
+            'destino'       => $telefonededestino,
+            'mensagemlonga' => $mensagemlonga,
+            'tipo'          => $tipo,
+            'mensagem'      => $mensagemaenviar
+        ];
+
+        $url = 'http://www.lusosms.com/enviar_sms_get.php?' . http_build_query($params, '', '&');
+        $file = fopen($url, "r");
+        $resultado = fgets($file, 1024);
+
+        return $resultado == 'mensagem_enviada';
+    }
+
 
     /**
      * Construct an array with subtitution rules for mail templates, relating to
@@ -146,7 +216,7 @@ class scheduler_messenger {
     public static function get_scheduler_variables(scheduler_instance $scheduler,  $slot,
                                                    $teacher, $student, $course, $recipient) {
 
-        global $CFG;
+        global $CFG, $DB;
 
         $lang = self::get_message_language($recipient, $course);
         // Force any string formatting to happen in the target language.
@@ -175,6 +245,9 @@ class scheduler_messenger {
             $vars['ATTENDEE']     = fullname($student);
             $vars['ATTENDEE_URL'] = $CFG->wwwroot.'/user/view.php?id='.$student->id.'&course='.$scheduler->course;
         }
+
+        $vars['TEACHERPHONE'] = $teacher->phone2;
+        $vars['SLOTTHEME'] = $DB->get_field('scheduler_appointment', 'theme', ['slotid' => $slot->get_id()]);
 
         // Reset language settings.
         force_current_language($oldlang);

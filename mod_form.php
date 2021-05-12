@@ -58,7 +58,7 @@ class mod_scheduler_mod_form extends moodleform_mod {
 
         $maxbookoptions = array();
         $maxbookoptions['0'] = get_string('unlimited', 'scheduler');
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 100; $i++) {
             $maxbookoptions[(string)$i] = $i;
         }
         $modegroup[] = $mform->createElement('select', 'maxbookings', '', $maxbookoptions);
@@ -97,6 +97,7 @@ class mod_scheduler_mod_form extends moodleform_mod {
         $mform->setDefault('defaultslotduration', 15);
 
         $mform->addElement('selectyesno', 'allownotifications', get_string('notifications', 'scheduler'));
+        $mform->setDefault('allownotifications', true);
         $mform->addHelpButton('allownotifications', 'notifications', 'scheduler');
 
         $noteoptions['0'] = get_string('usenotesnone', 'scheduler');

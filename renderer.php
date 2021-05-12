@@ -370,6 +370,8 @@ class mod_scheduler_renderer extends plugin_renderer_base {
      * @return string the HTML output
      */
     public function render_scheduler_slot_table(scheduler_slot_table $slottable) {
+        global $DB;
+
         $table = new html_table();
 
         if ($slottable->showslot) {
@@ -388,12 +390,8 @@ class mod_scheduler_renderer extends plugin_renderer_base {
             $table->head[]  = $slottable->scheduler->get_teacher_name();
             $table->align[] = 'left';
         }
-        if ($slottable->showslot && $slottable->showlocation) {
-            $table->head[]  = get_string('location', 'scheduler');
-            $table->align[] = 'left';
-        }
 
-        $table->head[] = get_string('comments', 'scheduler');
+        $table->head[] = get_string('theme', 'scheduler');
         $table->align[] = 'left';
 
         if ($slottable->showgrades) {
@@ -448,17 +446,12 @@ class mod_scheduler_renderer extends plugin_renderer_base {
                 $rowdata[] = $this->user_profile_link($slottable->scheduler, $slot->teacher);
             }
 
-            if ($slottable->showslot && $slottable->showlocation) {
-                $rowdata[] = format_string($slot->location);
-            }
+            /*
+             * Campo de tema da aula
+             */
+            $theme = $DB->get_field('scheduler_appointment','theme',['id'=>$slot->appointmentid]);
+            $rowdata[] = $theme;
 
-            $notes = '';
-            if ($slottable->showslot && isset($slot->slotnote)) {
-                $notes .= $this->format_notes($slot->slotnote, $slot->slotnoteformat,
-                                              $slottable->scheduler->get_context(), 'slotnote', $slot->slotid);
-            }
-            $notes .= $this->format_appointment_notes($slottable->scheduler, $slot, 'appointmentid');
-            $rowdata[] = $notes;
 
             if ($slottable->showgrades || $slottable->hasotherstudents) {
                 $gradedata = '';
@@ -541,7 +534,13 @@ class mod_scheduler_renderer extends plugin_renderer_base {
                     }
                 }
                 if ($studentlist->linkappointment) {
-                    $name = $this->appointment_link($studentlist->scheduler, $student->user, $student->entryid);
+                    global $DB;
+                    $usertheme = $DB->get_field('scheduler_appointment', 'theme', ['id' => $student->entryid]);
+                    if(!empty($usertheme)){
+                        $name = $this->appointment_link($studentlist->scheduler, $student->user, $student->entryid) . '-' . get_string('theme', 'scheduler') . ' : ' . $usertheme;
+                    } else {
+                        $name = $this->appointment_link($studentlist->scheduler, $student->user, $student->entryid);
+                    }
                 } else {
                     $name = fullname($student->user);
                 }
@@ -593,10 +592,11 @@ class mod_scheduler_renderer extends plugin_renderer_base {
      */
     public function render_scheduler_slot_booker(scheduler_slot_booker $booker) {
 
+        global $PAGE;
+
         $table = new html_table();
         $table->head  = array( get_string('date', 'scheduler'), get_string('start', 'scheduler'),
-                        get_string('end', 'scheduler'), get_string('location', 'scheduler'),
-                        get_string('comments', 'scheduler'), s($booker->scheduler->get_teacher_name()),
+                        get_string('end', 'scheduler'), s($booker->scheduler->get_teacher_name()),
                         get_string('groupsession', 'scheduler'), '');
         $table->align = array ('left', 'left', 'left', 'left', 'left', 'left', 'left', 'left');
         $table->id = 'slotbookertable';
@@ -607,7 +607,7 @@ class mod_scheduler_renderer extends plugin_renderer_base {
         $previousendtime = '';
         $canappoint = false;
 
-        foreach ($booker->slots as $slot) {
+        foreach ($booker->slots as $key => $slot) {
 
             $rowdata = array();
 
@@ -636,11 +636,6 @@ class mod_scheduler_renderer extends plugin_renderer_base {
             $rowdata[] = $starttimestr;
             $rowdata[] = $endtimestr;
 
-            $rowdata[] = format_string($slot->location);
-
-            $rowdata[] = $this->format_notes($slot->notes, $slot->notesformat, $booker->scheduler->get_context(),
-                                             'slotnote', $slot->slotid);
-
             $rowdata[] = $this->user_profile_link($booker->scheduler, $slot->teacher);
 
             $groupinfo = $slot->bookedbyme ? get_string('complete', 'scheduler') : $slot->groupinfo;
@@ -650,11 +645,49 @@ class mod_scheduler_renderer extends plugin_renderer_base {
 
             $rowdata[] = $groupinfo;
 
+            $cmmid = optional_param('id', '', PARAM_INT);
+            $sessk = sesskey();
             if ($slot->canbook) {
                 $bookaction = $booker->scheduler->uses_bookingform() ? 'bookingform' : 'bookslot';
-                $bookurl = new moodle_url($booker->actionurl, array('what' => $bookaction, 'slotid' => $slot->slotid));
-                $button = new single_button($bookurl, get_string('bookslot', 'scheduler'));
-                $rowdata[] = $this->render($button);
+                //$bookurl = new moodle_url($booker->actionurl, array('what' => $bookaction, 'slotid' => $slot->slotid));
+                //$button = new single_button($bookurl, get_string('bookslot', 'scheduler'));
+                //$rowdata[] = $this->render($button);
+
+                $themeselect = '<select class="form-control themeselect" name="themeselect" data-select="'.$key.'">
+                                  <option value="0">'.get_string('selecttheme', 'scheduler').'</option>
+                                  <option value="1">'.get_string('economia', 'scheduler').'</option>
+                                  <option value="2">'.get_string('sociedade', 'scheduler').'</option>
+                                  <option value="3">'.get_string('politica', 'scheduler').'</option>
+                                  <option value="4">'.get_string('trabalho', 'scheduler').'</option>
+                                  <option value="5">'.get_string('viagem', 'scheduler').'</option>
+                                  <option value="6">'.get_string('cidade', 'scheduler').'</option>
+                                  <option value="7">'.get_string('tempo', 'scheduler').'</option>
+                                  <option value="8">'.get_string('projeto', 'scheduler').'</option>
+                                  <option value="9">'.get_string('cliente', 'scheduler').'</option>
+                                  <option value="10">'.get_string('seguranca', 'scheduler').'</option>
+                                  <option value="11">'.get_string('equipas', 'scheduler').'</option>
+                                  <option value="12">'.get_string('logistica', 'scheduler').'</option>
+                                  <option value="13">'.get_string('decisao', 'scheduler').'</option>
+                                  <option value="14">'.get_string('outro', 'scheduler').'</option>
+                                </select>
+                                <input class="form-control hide mt-2 inputselect" data-inputselect="'.$key.'" name="othertheme" value=""><br>';
+                $form ='
+                <form class="" action="'.$booker->actionurl.'" method="post">
+                <div class="">
+                '.$themeselect.'
+                </div>
+                <div class="">
+                <input type="hidden" name="id" value="'.$cmmid.'">            
+                <input type="hidden" name="what" value="'.$bookaction.'">
+                <input type="hidden" name="sesskey" value="'.$sessk.'">
+                <input type="hidden" name="slotid" value="'.$slot->slotid.'">
+                <button class="btn btn-primary float-right btn-slot" disabled data-btnslot="'.$key.'">'.get_string('bookslot', 'scheduler').'</button>
+                </div>
+                </form>
+                ';
+
+                $rowdata[] = $form;
+
             } else {
                 $rowdata[] = '';
             }
@@ -666,6 +699,7 @@ class mod_scheduler_renderer extends plugin_renderer_base {
             $previousdate = $startdate;
         }
 
+        $PAGE->requires->js_call_amd('mod_scheduler/themeselect','init');
         return html_writer::table($table);
     }
 
@@ -706,7 +740,7 @@ class mod_scheduler_renderer extends plugin_renderer_base {
 
         $table = new html_table();
         $table->head  = array('', get_string('date', 'scheduler'), get_string('start', 'scheduler'),
-                        get_string('end', 'scheduler'), get_string('location', 'scheduler'), get_string('students', 'scheduler') );
+                        get_string('end', 'scheduler'), get_string('students', 'scheduler') );
         $table->align = array ('center', 'left', 'left', 'left', 'left', 'left');
         if ($slotman->showteacher) {
             $table->head[] = s($slotman->scheduler->get_teacher_name());
@@ -753,8 +787,6 @@ class mod_scheduler_renderer extends plugin_renderer_base {
             $rowdata[] = $startdatestr;
             $rowdata[] = $starttimestr;
             $rowdata[] = $endtimestr;
-
-            $rowdata[] = format_string($slot->location);
 
             $rowdata[] = $this->render($slot->students);
 

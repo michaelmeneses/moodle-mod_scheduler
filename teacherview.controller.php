@@ -335,6 +335,7 @@ switch ($action) {
         $appointment->attended = 1;
         $appointment->appointmentnote = '';
         $appointment->appointmentnoteformat = FORMAT_HTML;
+        $appointment->theme = '';
         $appointment->teachernote = '';
         $appointment->teachernoteformat = FORMAT_HTML;
         $appointment->timecreated = time();

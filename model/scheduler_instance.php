@@ -523,7 +523,7 @@ class scheduler_instance extends mvc_record_model {
      * @param string $orderby ORDER BY fields
      * @return scheduler_slot[]
      */
-    protected function fetch_slots($wherecond, $havingcond, array $params, $limitfrom='', $limitnum='', $orderby='') {
+    protected function fetch_slots($wherecond, $havingcond, array $params, $limitfrom='', $limitnum='', $orderby='s.id') {
         global $DB;
         $select = 'SELECT s.* FROM {scheduler_slots} s';
 
@@ -538,11 +538,7 @@ class scheduler_instance extends mvc_record_model {
             $having = 'HAVING '.$havingcond;
         }
 
-        if ($orderby) {
-            $order = "ORDER BY $orderby, s.id";
-        } else {
-            $order = "ORDER BY s.id";
-        }
+        $order = 'ORDER BY '.$orderby;
 
         $sql = "$select $where $having $order";
 
@@ -735,7 +731,7 @@ class scheduler_instance extends mvc_record_model {
             }
         }
         $wherecond .= " AND ($subcond)";
-        $order = 's.starttime ASC, s.duration ASC, s.teacherid';
+        $order = 's.starttime ASC';
         $slots = $this->fetch_slots($wherecond, '', $params, '', '', $order);
 
         return $slots;
@@ -852,7 +848,7 @@ class scheduler_instance extends mvc_record_model {
      */
     public function get_slots_for_teacher($teacherid, $groupid = 0, $limitfrom = '', $limitnum = '') {
         list($where, $params) = $this->slots_for_teacher_cond($teacherid, $groupid, false);
-        return $this->fetch_slots($where, '', $params, $limitfrom, $limitnum, 's.starttime ASC, s.duration ASC, s.teacherid');
+        return $this->fetch_slots($where, '', $params, $limitfrom, $limitnum, 's.starttime ASC');
     }
 
     /**
@@ -865,7 +861,7 @@ class scheduler_instance extends mvc_record_model {
      */
     public function get_slots_for_group($groupid, $limitfrom = '', $limitnum = '') {
         list($where, $params) = $this->slots_for_teacher_cond(0, $groupid, false);
-        return $this->fetch_slots($where, '', $params, $limitfrom, $limitnum, 's.starttime ASC, s.duration ASC, s.teacherid');
+        return $this->fetch_slots($where, '', $params, $limitfrom, $limitnum, 's.starttime ASC');
     }
 
 

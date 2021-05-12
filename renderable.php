@@ -87,6 +87,7 @@ class scheduler_slot_table implements renderable {
             $slot->teachernote = $appointmentmodel->teachernote;
             $slot->teachernoteformat = $appointmentmodel->teachernoteformat;
         }
+        $slot->theme = $appointmentmodel->theme;
         $slot->otherstudents = $otherstudents;
         $slot->cancancel = $cancancel;
         $slot->canedit = $canedit;

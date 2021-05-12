@@ -50,6 +50,7 @@
         <FIELD NAME="notesformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="exclusivity" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="emaildate" TYPE="int" LENGTH="11" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="eventnear" TYPE="int" LENGTH="11" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="hideuntil" TYPE="int" LENGTH="11" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
@@ -72,6 +73,7 @@
         <FIELD NAME="teachernoteformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="studentnote" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Note supplied by student at time of booking"/>
         <FIELD NAME="studentnoteformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="theme" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>

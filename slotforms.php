@@ -206,8 +206,8 @@ class scheduler_editslot_form extends scheduler_slotform_base {
         $mform->setDefault('hideuntil', time());
 
         // Send e-mail reminder?
-        $mform->addElement('date_selector', 'emaildate', get_string('emailreminderondate', 'scheduler'),
-                            array('optional'  => true));
+        $mform->addElement('date_selector', 'emaildate', get_string('emailreminderondate', 'scheduler'));
+        $mform->setDefault('emaildate', time());
         $mform->setDefault('remindersel', -1);
 
         // Slot comments.
@@ -598,7 +598,7 @@ class scheduler_addsession_form extends scheduler_slotform_base {
         $starttime = $data['starthour'] * 60 + $data['startminute'];
         $endtime = $data['endhour'] * 60 + $data['endminute'];
         if ($starttime > $endtime) {
-            $errors['timerange'] = get_string('negativerange', 'scheduler');
+            $errors['endtime'] = get_string('negativerange', 'scheduler');
         }
 
         // First slot is in the past.

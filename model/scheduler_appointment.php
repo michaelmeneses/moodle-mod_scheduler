@@ -35,6 +35,7 @@ class scheduler_appointment extends mvc_child_record_model {
         $this->data->attended = 0;
         $this->data->appointmentnoteformat = FORMAT_HTML;
         $this->data->teachernoteformat = FORMAT_HTML;
+        $this->data->theme = '';
     }
 
     public function save() {

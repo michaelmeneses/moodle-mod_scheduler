@@ -19,6 +19,8 @@ $id = optional_param('id', '', PARAM_INT);    // Course Module ID - if it's not 
 $action = optional_param('what', 'view', PARAM_ALPHA);
 $subaction = optional_param('subaction', '', PARAM_ALPHA);
 $offset = optional_param('offset', -1, PARAM_INT);
+$themeselect = optional_param('themeselect', '', PARAM_INT);
+$othertheme = optional_param('othertheme', '', PARAM_ALPHA);
 
 if ($id) {
     $cm = get_coursemodule_from_id('scheduler', $id, 0, false, MUST_EXIST);

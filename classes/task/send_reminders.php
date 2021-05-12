@@ -39,6 +39,34 @@ require_once(dirname(__FILE__).'/../../mailtemplatelib.php');
         // Find relevant slots in all schedulers.
         $select = 'emaildate > 0 AND emaildate <= ? AND starttime > ?';
         $slots = $DB->get_records_select('scheduler_slots', $select, array($date, $date), 'starttime');
+        $selectNear = 'eventnear = 0 AND NOW() > DATE_SUB(FROM_UNIXTIME(starttime), INTERVAL 33 MINUTE)';
+        $slot2s = $DB->get_records_select('scheduler_slots', $selectNear, [$date], 'starttime');
+
+        foreach ($slot2s as $slot) {
+
+            // Get teacher record.
+            $teacher = $DB->get_record('user', ['id' => $slot->teacherid]);
+
+            // Get scheduler, slot and course.
+            $scheduler = \scheduler_instance::load_by_id($slot->schedulerid);
+            $slotm = $scheduler->get_slot($slot->id);
+            $course = $scheduler->get_courserec();
+
+            // Mark as sent. (Do this first for safe fallback in case of an exception.)
+            $slot->eventnear = -1;
+            $DB->update_record('scheduler_slots', $slot);
+
+            // Send reminder to all students in the slot.
+            foreach ($slotm->get_appointments() as $appointment) {
+                $student = $DB->get_record('user', ['id' => $appointment->studentid]);
+                cron_setup_user($student, $course);
+                \scheduler_messenger::send_slot_notification($slotm,
+                    'reminderclose', 'reminderclose', $teacher, $student, $teacher, $student, $course);
+                // E-mail para o professor
+                \scheduler_messenger::send_slot_notification($slotm,
+                    'remindercloseteacher', 'remindercloseteacher', $student, $teacher, $student, $teacher, $course);
+            }
+        }
 
         foreach ($slots as $slot) {
             // Get teacher record.

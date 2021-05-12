@@ -47,6 +47,9 @@ $string['event_slotdeleted'] = 'Scheduler slot deleted';
 $string['messageprovider:invitation'] = 'Invitation to book a slot';
 $string['messageprovider:bookingnotification'] = 'Notification when a booking is made or cancelled';
 $string['messageprovider:reminder'] = 'Reminder of an upcoming appointment';
+$string['messageprovider:reminderteacher'] = 'Reminder of an upcoming appointment';
+$string['messageprovider:reminderclose'] = 'Reminder of an upcoming appointment';
+$string['messageprovider:remindercloseteacher'] = 'Reminder of an upcoming appointment';
 
 /* ***** Search areas ***** */
 $string['search:activity'] = 'Scheduler - activity information';
@@ -549,12 +552,30 @@ by the student {$a->attendee} for the course:
 
 using the scheduler titled "{$a->module}" on the website: {$a->site}.';
 
-$string['email_applied_html'] = '<p>An appointment has been applied for on {$a->date} at {$a->time},<br/>
-by the student <a href="{$a->attendee_url}">{$a->attendee}</a> for the course:
+$string['email_applied_html'] = '<p>Dear Teacher,<br/>
 
-<p>{$a->course_short}: <a href="{$a->course_url}">{$a->course}</a></p>
+<p>Your Phone lesson is confirmed for <strong>{$a->date}</strong> at <strong>{$a->time}</strong> with your student: {$a->attendee}</p>
+<p>Topic: {$a->slottheme}</p>
 
 <p>using the scheduler titled "<em><a href="{$a->scheduler_url}">{$a->module}</a></em>" on the website: <a href="{$a->site_url}">{$a->site}</a>.</p>';
+
+
+/* Para o estudante quando marca a aula */
+$string['email_studentapplied_subject'] = '{$a->course_short}: New appointment';
+$string['email_studentapplied_plain'] = 'Dear Student, Your Phone lesson is confirmed on {$a->date} at {$a->time}.
+
+Thank you.
+Linguagest';
+
+$string['email_studentapplied_html'] = '<p>Dear Student, <br/>Your Phone lesson is confirmed on {$a->date} at {$a->time}.
+
+
+<p>Thank you.</p>
+
+<p>Linguagest</p>';
+
+/******* *******/
+
 
 $string['email_cancelled_subject'] = '{$a->course_short}: Appointment cancelled or moved by a student';
 
@@ -576,19 +597,93 @@ with the student <strong><a href="{$a->attendee_url}">{$a->attendee}</a></strong
 
 <p><strong><span class="error">has been cancelled or moved</span></strong>.</p>';
 
+$string['email_cancelledstudent_subject'] = '{$a->course_short}: Appointment cancelled';
+
+$string['email_cancelledstudent_plain'] = 'This is to confirm cancellation of your Phone Lesson, which was scheduled on  {$a->date} at {$a->time}.
+
+Please reschedule your Phone lesson on another day:
+{$a->site}
+
+Thank you!
+
+Linguagest';
+
+$string['email_cancelledstudent_html'] = '<p>This is to confirm cancellation of your Phone Lesson, which was scheduled on  <strong>{$a->date}</strong> at <strong>{$a->time}</strong>.</p>
+
+<p>Please reschedule your Phone lesson on another day:</p>
+<a href="{$a->scheduler_url}">{$a->module}</a>
+
+<p>Thank you!</p>
+
+<p>Linguagest</p>';
+
 $string['email_reminder_subject'] = '{$a->course_short}: Appointment reminder';
 
-$string['email_reminder_plain'] = 'You have an upcoming appointment
-on {$a->date} from {$a->time} to {$a->endtime}
-with {$a->attendant}.
+$string['email_reminder_plain'] = 'Dear Student,
 
-Location: {$a->location}';
+Your Phone Lesson is confirmed for tomorrow, {$a->date} at {$a->time}.
 
-$string['email_reminder_html'] = '<p>You have an upcoming appointment on <strong>{$a->date}</strong>
-from <strong>{$a->time}</strong> to <strong>{$a->endtime}</strong><br/>
-with <strong><a href="{$a->attendant_url}">{$a->attendant}</a></strong>.</p>
+If you are not available, cancel now, otherwise this lesson will be charged.
 
-<p>Location: <strong>{$a->location}</strong></p>';
+Regards
+
+Linguagest';
+
+
+$string['email_reminder_html'] = '<p>Dear Student</p><p>Your Phone Lesson is confirmed for tomorrow, <strong>{$a->date}</strong>
+at <strong>{$a->time}</strong><br/>
+If you are not available, cancel now, otherwise this lesson will be charged.</p>
+
+<p>Regards</p>
+<p>Linguagest</p>';
+
+$string['email_reminderteacher_subject'] = '{$a->course_short}: Appointment reminder';
+
+$string['email_reminderteacher_plain'] = 'Dear teacher,
+
+Your Phone Lesson is confirmed for tomorrow, {$a->date} at {$a->time}.
+
+Regards
+
+Linguagest';
+
+$string['email_reminderteacher_html'] = '<p>Dear teacher</p>
+<p>Your Phone Lesson is confirmed for tomorrow, <strong>{$a->date}</strong> at <strong>{$a->time}</strong><br/>
+
+<p>Regards</p>
+<p>Linguagest</p>';
+
+$string['email_reminderclose_subject'] = '{$a->course_short}: Appointment reminder';
+
+$string['email_reminderclose_plain'] = 'Hello!
+
+Reminder: your Phone Lesson starts in 30 minutes.
+
+You will receive a phone call from this number: {$a->teacherphone}
+
+Thank you!
+
+Linguagest';
+
+$string['email_reminderclose_html'] = '<p>Hello</p>
+<p>Reminder: your Phone Lesson starts in 30 minutes.</p>
+
+<p>You will receive a phone call from this number: {$a->teacherphone}</p> 
+
+<p>Thank you</p>
+<p>Linguagest</p>';
+
+$string['email_remindercloseteacher_subject'] = '{$a->course_short}: Appointment reminder';
+$string['email_remindercloseteacher_plain'] = 'Hello! 
+Reminder: your Phone Lesson starts in 30 minutes.
+
+Thank you! 
+Linguagest';
+$string['email_remindercloseteacher_html'] = '<p>Hello</p>
+<p>Reminder: your Phone Lesson starts in 30 minutes.</p>
+
+<p>Thank you</p>
+<p>Linguagest</p>';
 
 $string['email_teachercancelled_subject'] = '{$a->course_short}: Appointment cancelled by the teacher';
 
@@ -615,3 +710,22 @@ $string['email_invite_html'] = '<p>Please choose a time slot for an appointment 
 
 $string['email_invitereminder_subject'] = 'Reminder: {$a->module}';
 $string['email_invitereminder_html'] = '<p>This is just a reminder that you have not yet set up your appointment. Please choose a time slot as soon as possible at:</p><p>{$a->scheduler_url}</p>';
+
+
+$string['economia'] = 'A economia';
+$string['sociedade'] = 'As tendências e problemas da sociedade';
+$string['politica'] = 'A política e valores sociais';
+$string['trabalho'] = 'O mundo do trabalho';
+$string['viagem'] = 'Viagens - Hotéis/Aeroportos';
+$string['cidade'] = 'Visitar uma cidade';
+$string['tempo'] = 'Tempos livres - equilíbrio';
+$string['projeto'] = 'Projetos';
+$string['cliente'] = 'Serviço ao cliente';
+$string['seguranca'] = 'Segurança no trabalho';
+$string['equipas'] = 'Trabalho em equipas';
+$string['logistica'] = 'Logística';
+$string['decisao'] = 'Decisões';
+$string['outro'] = 'Outro';
+$string['theme'] = 'Tema';
+$string['selecttheme'] = 'Selecione o tema';
+

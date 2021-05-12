@@ -1,0 +1,19 @@
+1. A ideia Ã© exatamente como conversamos:
+- criar uma ferramenta no AVA da Linguagest com o nome de Teleaula (incluiremos junto a logomarca da instituiÃ§Ã£o).
+
+- criaremos um cadastro dos alunos que poderÃ£o agendar as aulas com nome, e-mail e telefone.
+
+- criaremos um cadastro dos professores com os mesmos dados.
+
+- semanal, quinzenal ou mensalmente, produziremos uma agenda com os dias da semana, horÃ¡rios disponÃ­veis e nome do professor junto com o horÃ¡rio disponÃ­vel.
+
+- o aluno, ao fazer o login, Ã© direcionado para este curso com a possibilidade de agendar e desmarcar aulas.
+
+Ã‰ importante que tudo seja muito intuitivo e com poucos cliques.
+
+- apÃ³s agendar ou desmarcar, professor e aluno recebem mensagem com a confirmaÃ§Ã£o do agendamento ou cancelamento por SMS e e-mail.
+(Cada aluno terÃ¡ um total de 10 aulas. Assim, se for possÃ­vel, podemos incluir o saldo de aulas que ainda falta na confirmaÃ§Ã£o).
+
+- 24 horas antes da aula, professor e aluno recebem aviso por SMS e e-mail sobre a aula.
+
+- 30 minutos antes da aula, professor e aluno recebem aviso por SMS e e-mail sobre a aula.
